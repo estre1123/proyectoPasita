@@ -20,11 +20,13 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # ===============================
 # 数据库连接
 # ===============================
+import os
+
 conn = psycopg2.connect(
-    host="db.jhqupoalrdkreqwrciix.supabase.co",
-    database="postgres",
-    user="postgres",
-    password="proyecto12345",
+    host=os.environ.get("DB_HOST"),
+    database=os.environ.get("DB_NAME"),
+    user=os.environ.get("DB_USER"),
+    password=os.environ.get("DB_PASSWORD"),
     port="5432"
 )
 
@@ -221,4 +223,5 @@ def edit_product(id):
 # ===============================
 # 启动
 # ===============================
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run()
