@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Pasita</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- 左侧菜单 -->
+    <div class="sidebar">
+        <h2>Pasita</h2>
+
+        <a href="#" onclick="filterProducts('Maquinas')">Maquinas</a>
+        <a href="#" onclick="filterProducts('Productos Faciales')">Productos Faciales</a>
+    </div>
+
+    <!-- 右侧商品 -->
+    <div class="main">
+        <h1>Productos</h1>
+        <div id="products"></div>
+    </div>
+
+</div>
+
+<script src="/static/app.js"></script>
+
+</body>
+</html>

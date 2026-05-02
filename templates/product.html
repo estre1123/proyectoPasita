@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>商品详情</title>
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#f5f5f5;
+}
+
+/* 返回按钮 */
+.back-btn{
+    display:inline-block;
+    margin:30px 0 0 60px;
+    padding:10px 20px;
+    background:#111;
+    color:white;
+    text-decoration:none;
+    border-radius:8px;
+    transition:0.3s;
+}
+
+.back-btn:hover{
+    background:#333;
+}
+
+/* 商品详情 */
+#detail{
+    width:90%;
+    max-width:1200px;
+    margin:30px auto;
+    background:white;
+    border-radius:15px;
+    padding:40px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.product-box{
+    display:flex;
+    align-items:center;
+    gap:60px;
+}
+
+.left{
+    flex:1;
+    text-align:center;
+}
+
+.left img{
+    width:400px;
+    max-width:100%;
+    border-radius:15px;
+    transition:0.3s;
+}
+
+.left img:hover{
+    transform:scale(1.05);
+}
+
+.right{
+    flex:1;
+}
+
+.right h1{
+    font-size:38px;
+    margin-bottom:20px;
+}
+
+.price{
+    font-size:30px;
+    color:#000;
+    margin-bottom:20px;
+}
+
+.desc{
+    font-size:18px;
+    color:#555;
+    line-height:1.6;
+}
+
+/* Otros */
+.related-title{
+    width:90%;
+    max-width:1200px;
+    margin:40px auto 20px;
+    font-size:28px;
+}
+
+#related{
+    width:90%;
+    max-width:1200px;
+    margin:auto auto 50px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+}
+
+.related-card{
+    width:220px;
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.related-card:hover{
+    transform:translateY(-8px);
+}
+
+.related-card img{
+    width:100%;
+    height:140px;          /* 统一高度 */
+    object-fit:cover;      /* 自动裁切不变形 */
+    border-radius:10px;
+}
+
+.related-card h3{
+    font-size:18px;
+    margin:10px 0 5px;
+}
+
+.related-card p{
+    margin:0;
+}
+</style>
+</head>
+
+<body>
+
+<a href="index.html" class="back-btn">← Volver</a>
+
+<div id="detail"></div>
+
+<h2 class="related-title">Otros</h2>
+<div id="related"></div>
+
+<script>
+const id = new URLSearchParams(window.location.search).get("id");
+
+let tipoActual = "";
+
+/* 当前商品 */
+fetch(`http://127.0.0.1:5000/products/${id}`)
+.then(res => res.json())
+.then(p => {
+
+tipoActual = p.tipo;
+
+document.getElementById("detail").innerHTML = `
+<div class="product-box">
+
+    <div class="left">
+        <img src="${p.image}">
+    </div>
+
+    <div class="right">
+        <h1>${p.name}</h1>
+        <div class="price">Gs. ${p.price}</div>
+        <div class="desc">${p.description}</div>
+    </div>
+
+</div>
+`;
+
+cargarRelacionados();
+});
+
+/* 同类型商品 */
+function cargarRelacionados(){
+
+fetch("http://127.0.0.1:5000/products")
+.then(res => res.json())
+.then(data => {
+
+const related = document.getElementById("related");
+related.innerHTML = "";
+
+data.forEach(p => {
+
+    if(p.id != id && p.tipo == tipoActual){
+
+        related.innerHTML += `
+        <div class="related-card"
+             onclick="window.location.href='product.html?id=${p.id}'">
+
+            <img src="${p.image}">
+            <h3>${p.name}</h3>
+            <p>Gs. ${p.price}</p>
+
+        </div>
+        `;
+    }
+
+});
+
+});
+}
+</script>
+
+</body>
+</html>

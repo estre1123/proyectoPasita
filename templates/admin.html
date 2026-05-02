@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#f4f4f4;
+}
+
+/* 顶部 */
+.topbar{
+    background:#111;
+    color:#fff;
+    padding:20px;
+    text-align:center;
+    font-size:24px;
+}
+
+/* 菜单 */
+.menu{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin:30px 0;
+}
+
+.menu button{
+    padding:12px 25px;
+    border:none;
+    border-radius:8px;
+    background:#111;
+    color:#fff;
+    cursor:pointer;
+}
+
+/* 页面 */
+.section{
+    display:none;
+    width:95%;
+    max-width:1300px;
+    margin:auto;
+}
+
+.active{
+    display:block;
+}
+
+/* 新增 */
+.box{
+    width:450px;
+    margin:auto;
+    background:#fff;
+    padding:30px;
+    border-radius:15px;
+}
+
+input,textarea,select{
+    width:100%;
+    padding:12px;
+    margin-bottom:15px;
+    box-sizing:border-box;
+}
+
+/* 管理布局 */
+.manage-layout{
+    display:flex;
+    gap:25px;
+}
+
+.manage-sidebar{
+    width:220px;
+    height:150px;
+    background:#fff;
+    padding:20px;
+    border-radius:15px;
+}
+
+.manage-sidebar button{
+    width:100%;
+    padding:12px;
+    margin-bottom:10px;
+    border:none;
+    border-radius:10px;
+    background:#111;
+    color:#fff;
+    cursor:pointer;
+}
+
+.manage-content{
+    flex:1;
+}
+
+#list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+}
+
+.card{
+    width:220px;
+    background:#fff;
+    padding:15px;
+    border-radius:12px;
+}
+
+.card img{
+    width:100%;
+    height:140px;
+    object-fit:cover;
+    border-radius:10px;
+}
+
+.actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:10px;
+}
+
+.actions button{
+    flex:1;
+    padding:8px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.edit{
+    background:#111;
+    color:#fff;
+}
+
+.delete{
+    background:#e53935;
+    color:#fff;
+}
+
+/* toast */
+.toast{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:#fff;
+    padding:25px 40px;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    z-index:9999;
+    text-align:center;
+}
+
+.toast.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+.check{
+    font-size:40px;
+    color:green;
+    margin-bottom:10px;
+}
+
+/* 删除确认（加大） */
+.confirm-big{
+    width:430px;
+    max-width:90%;
+    padding:35px;
+}
+
+.confirm-title{
+    font-size:28px;
+    font-weight:bold;
+    margin-bottom:25px;
+}
+
+.confirm-buttons{
+    display:flex;
+    gap:15px;
+}
+
+.confirm-buttons button{
+    flex:1;
+    padding:14px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+/* modal */
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.6);
+    z-index:999;
+}
+
+.modal-box{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:#fff;
+    width:600px;
+    max-width:90%;
+    padding:30px;
+    border-radius:15px;
+}
+
+.modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.btn{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.btn-save{
+    background:#111;
+    color:#fff;
+}
+
+.btn-cancel{
+    background:#e53935;
+    color:#fff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">后台管理系统</div>
+
+<div class="menu">
+<button onclick="showPage('add')">新增商品</button>
+<button onclick="showPage('manage')">管理商品</button>
+</div>
+
+<!-- 新增 -->
+<div id="add" class="section active">
+<div class="box">
+
+<h2>新增商品</h2>
+
+<input id="nameInput" placeholder="Nombre">
+<input id="priceInput" placeholder="Precio">
+
+<select id="tipoInput">
+<option value="Maquinas">Maquinas</option>
+<option value="Productos Faciales">Productos Faciales</option>
+</select>
+
+<input type="file" id="imageInput">
+<textarea id="descriptionInput" placeholder="Descripcion"></textarea>
+
+<button onclick="upload()">上传商品</button>
+
+</div>
+</div>
+
+<!-- 管理 -->
+<div id="manage" class="section">
+
+<div class="manage-layout">
+
+<div class="manage-sidebar">
+<button onclick="load('Todos')">Todos</button>
+<button onclick="load('Maquinas')">Maquinas</button>
+<button onclick="load('Productos Faciales')">Productos Faciales</button>
+</div>
+
+<div class="manage-content">
+<div id="list"></div>
+</div>
+
+</div>
+</div>
+
+<!-- toast -->
+<div id="toast" class="toast">
+<div class="check">✔</div>
+<div id="toastText"></div>
+</div>
+
+<!-- 删除确认 -->
+<div id="confirmBox" class="toast confirm-big">
+<div class="confirm-title">确定删除？</div>
+
+<div class="confirm-buttons">
+<button class="btn-save" onclick="confirmDelete()">确定</button>
+<button class="btn-cancel" onclick="closeConfirm()">取消</button>
+</div>
+</div>
+
+<!-- 编辑 -->
+<div id="modal" class="modal">
+<div class="modal-box">
+
+<h3>编辑商品</h3>
+
+<input id="e_name">
+<input id="e_price">
+
+<select id="e_tipo">
+<option value="Maquinas">Maquinas</option>
+<option value="Productos Faciales">Productos Faciales</option>
+</select>
+
+<textarea id="e_desc"></textarea>
+
+<input type="file" id="e_image">
+
+<div class="modal-actions">
+<button class="btn btn-save" onclick="saveEdit()">保存</button>
+<button class="btn btn-cancel" onclick="closeModal()">关闭</button>
+</div>
+
+</div>
+</div>
+
+<script>
+let editId = null;
+let deleteId = null;
+
+/* toast */
+function showToast(text){
+    document.getElementById("toastText").innerText = text;
+    document.getElementById("toast").classList.add("show");
+
+    setTimeout(()=>{
+        document.getElementById("toast").classList.remove("show");
+    },2000);
+}
+
+/* 切页 */
+function showPage(page){
+
+    document.querySelectorAll(".section").forEach(s=>{
+        s.classList.remove("active");
+    });
+
+    document.getElementById(page).classList.add("active");
+
+    if(page==="manage"){
+        load("Todos");
+    }
+}
+
+/* 上传 */
+function upload(){
+
+    const name = document.getElementById("nameInput");
+    const price = document.getElementById("priceInput");
+    const tipo = document.getElementById("tipoInput");
+    const image = document.getElementById("imageInput");
+    const desc = document.getElementById("descriptionInput");
+
+    const file = image.files[0];
+
+    if(!file){
+        showToast("请选择图片");
+        return;
+    }
+
+    let form = new FormData();
+
+    form.append("name", name.value);
+    form.append("price", price.value);
+    form.append("tipo", tipo.value);
+    form.append("description", desc.value);
+    form.append("image", file);
+
+    fetch("http://127.0.0.1:5000/add-product",{
+        method:"POST",
+        body:form
+    })
+    .then(r=>r.json())
+    .then(d=>{
+
+        showToast(d.message);
+
+        /* 清空全部 */
+        name.value = "";
+        price.value = "";
+        tipo.value = "Maquinas";
+        image.value = "";
+        desc.value = "";
+
+    });
+}
+
+/* 读取商品 */
+function load(filterTipo){
+
+    fetch("http://127.0.0.1:5000/products")
+    .then(r=>r.json())
+    .then(data=>{
+
+        if(filterTipo!=="Todos"){
+            data = data.filter(p => p.tipo === filterTipo);
+        }
+
+        let html = "";
+
+        data.forEach(p=>{
+
+            html += `
+            <div class="card">
+                <img src="${p.image}">
+                <h3>${p.name}</h3>
+                <p>Gs. ${p.price}</p>
+                <p>${p.tipo}</p>
+
+                <div class="actions">
+                    <button class="edit" onclick="openEdit(${p.id})">编辑</button>
+                    <button class="delete" onclick="del(${p.id})">删除</button>
+                    <button onclick="downloadImg('${p.image}')">下载</button>
+                </div>
+            </div>
+            `;
+        });
+
+        document.getElementById("list").innerHTML = html;
+    });
+}
+
+/* 删除 */
+function del(id){
+    deleteId = id;
+    document.getElementById("confirmBox").classList.add("show");
+}
+
+function closeConfirm(){
+    document.getElementById("confirmBox").classList.remove("show");
+}
+
+function confirmDelete(){
+
+    fetch("http://127.0.0.1:5000/delete-product/"+deleteId,{
+        method:"DELETE"
+    })
+    .then(r=>r.json())
+    .then(d=>{
+
+        closeConfirm();
+        showToast(d.message);
+        load("Todos");
+
+    });
+}
+
+/* 打开编辑 */
+function openEdit(id){
+
+    fetch("http://127.0.0.1:5000/products/"+id)
+    .then(r=>r.json())
+    .then(p=>{
+
+        editId = p.id;
+
+        e_name.value = p.name;
+        e_price.value = p.price;
+        e_tipo.value = p.tipo;
+        e_desc.value = p.description;
+
+        document.getElementById("modal").style.display = "block";
+    });
+}
+
+/* 关闭编辑 */
+function closeModal(){
+    document.getElementById("modal").style.display = "none";
+}
+
+/* 保存编辑 */
+function saveEdit(){
+
+    let form = new FormData();
+
+    form.append("name", e_name.value);
+    form.append("price", e_price.value);
+    form.append("tipo", e_tipo.value);
+    form.append("description", e_desc.value);
+
+    const file = document.getElementById("e_image").files[0];
+
+    if(file){
+        form.append("image", file);
+    }
+
+    fetch("http://127.0.0.1:5000/edit-product/"+editId,{
+        method:"PUT",
+        body:form
+    })
+    .then(r=>r.json())
+    .then(d=>{
+
+        closeModal();
+        showToast(d.message);
+        load("Todos");
+
+    });
+}
+
+/* 下载图片 */
+function downloadImg(url){
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = "product.jpg";
+    a.click();
+}
+</script>
+
+</body>
+</html>
