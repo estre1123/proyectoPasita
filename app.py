@@ -20,19 +20,23 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # ===============================
 # 数据库连接
 # ===============================
-import os
-
-import os
-import psycopg2
 
 def get_conn():
-    print("DB_HOST =", os.environ.get("DB_HOST"))
+    host = os.environ.get("DB_HOST")
+    db = os.environ.get("DB_NAME")
+    user = os.environ.get("DB_USER")
+    password = os.environ.get("DB_PASSWORD")
+
+    print("DB_HOST =", host)
+
+    if not host:
+        raise Exception("DB_HOST 没有设置！Render环境变量没生效")
 
     return psycopg2.connect(
-        host=os.environ.get("DB_HOST"),
-        database=os.environ.get("DB_NAME"),
-        user=os.environ.get("DB_USER"),
-        password=os.environ.get("DB_PASSWORD"),
+        host=host,
+        database=db,
+        user=user,
+        password=password,
         port="5432"
     )
 
