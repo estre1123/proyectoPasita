@@ -22,13 +22,14 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # ===============================
 import os
 
-conn = psycopg2.connect(
-    host=os.environ.get("DB_HOST"),
-    database=os.environ.get("DB_NAME"),
-    user=os.environ.get("DB_USER"),
-    password=os.environ.get("DB_PASSWORD"),
-    port="5432"
-)
+def get_conn():
+    return psycopg2.connect(
+        host=os.environ.get("DB_HOST"),
+        database=os.environ.get("DB_NAME"),
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASSWORD"),
+        port="5432"
+    )
 
 # ===============================
 # 首页
@@ -42,8 +43,8 @@ def home():
 # ===============================
 @app.route("/products")
 def products():
+    cur = get_conn().cursor()
 
-    cur = conn.cursor()
 
     cur.execute("""
         SELECT id,name,price,tipo,image,description
@@ -74,7 +75,7 @@ def products():
 @app.route("/products/<int:id>")
 def product_detail(id):
 
-    cur = conn.cursor()
+    cur = get_conn().cursor()
     cur.execute("""
         SELECT id,name,price,tipo,image,description
         FROM products
@@ -122,7 +123,7 @@ def add_product():
 
     file.save(filepath)
 
-    cur = conn.cursor()
+    cur = get_conn().cursor()
 
     cur.execute("""
         INSERT INTO products(name,price,tipo,image,description)
@@ -135,7 +136,7 @@ def add_product():
         description
     ))
 
-    conn.commit()
+    cur = get_conn().cursor()
     cur.close()
 
     return jsonify({"message":"上传成功"})
@@ -146,7 +147,7 @@ def add_product():
 @app.route("/delete-product/<int:id>", methods=["DELETE"])
 def delete_product(id):
 
-    cur = conn.cursor()
+    cur = get_conn().cursor()
 
     # 先查图片名
     cur.execute("SELECT image FROM products WHERE id=%s",(id,))
@@ -160,7 +161,7 @@ def delete_product(id):
             os.remove(path)
 
     cur.execute("DELETE FROM products WHERE id=%s",(id,))
-    conn.commit()
+    cur = get_conn().cursor()
     cur.close()
 
     return jsonify({"message":"删除成功"})
@@ -176,7 +177,7 @@ def edit_product(id):
     tipo = request.form["tipo"]
     description = request.form["description"]
 
-    cur = conn.cursor()
+    cur = get_conn().cursor()
 
     # 查旧图片
     cur.execute("SELECT image FROM products WHERE id=%s",(id,))
@@ -215,7 +216,7 @@ def edit_product(id):
         id
     ))
 
-    conn.commit()
+    cur = get_conn().cursor()
     cur.close()
 
     return jsonify({"message":"编辑成功"})
