@@ -29,4 +29,21 @@
 <script src="/static/app.js"></script>
 
 </body>
+<script>
+fetch("/products")
+  .then(res => res.json())
+  .then(data => {
+    let html = ""
+    data.forEach(p => {
+      html += `
+        <div>
+          <h3>${p.name}</h3>
+          <p>${p.price}</p>
+          <img src="${p.image}" width="100">
+        </div>
+      `
+    })
+    document.getElementById("products").innerHTML = html
+  })
+</script>
 </html>

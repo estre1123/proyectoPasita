@@ -22,7 +22,12 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # ===============================
 import os
 
+import os
+import psycopg2
+
 def get_conn():
+    print("DB_HOST =", os.environ.get("DB_HOST"))
+
     return psycopg2.connect(
         host=os.environ.get("DB_HOST"),
         database=os.environ.get("DB_NAME"),
@@ -36,6 +41,11 @@ def get_conn():
 # ===============================
 @app.route("/")
 def home():
+    return render_template("index.html")
+
+
+@app.route("/admin")
+def admin():
     return render_template("admin.html")
 
 # ===============================
