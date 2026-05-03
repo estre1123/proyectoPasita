@@ -52,7 +52,7 @@ filtered.forEach(function(p){
     `;
 
     card.addEventListener("click", function(){
-        window.location.href = `product.html?id=${p.id}`;
+        window.location.href = `/product/${p.id}`;
     });
 
     container.appendChild(card);
