@@ -30,7 +30,7 @@ def get_conn():
     print("DB_HOST =", host)
 
     if not host:
-        raise Exception("DB_HOST 没有设置！Render环境变量没生效")
+        raise Exception("DB_HOST 没有设置!Render环境变量没生效")
 
     return psycopg2.connect(
         host=host,
@@ -117,41 +117,27 @@ def product_detail(id):
 @app.route("/add-product", methods=["POST"])
 def add_product():
 
+    conn = get_conn()
+    cur = conn.cursor()
+
     name = request.form["name"]
     price = request.form["price"]
     tipo = request.form["tipo"]
     description = request.form["description"]
 
     file = request.files["image"]
-
     filename = secure_filename(file.filename)
-
-    # 避免重复档名
     filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-
-    count = 1
-    while os.path.exists(filepath):
-        filename = f"{count}_{secure_filename(file.filename)}"
-        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        count += 1
-
     file.save(filepath)
-
-    cur = get_conn().cursor()
 
     cur.execute("""
         INSERT INTO products(name,price,tipo,image,description)
         VALUES(%s,%s,%s,%s,%s)
-    """, (
-        name,
-        price,
-        tipo,
-        filename,
-        description
-    ))
+    """,(name,price,tipo,filename,description))
 
-    cur = get_conn().cursor()
+    conn.commit()
     cur.close()
+    conn.close()
 
     return jsonify({"message":"上传成功"})
 
