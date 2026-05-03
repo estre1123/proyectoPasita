@@ -26,18 +26,19 @@ def get_conn():
     db = os.environ.get("DB_NAME")
     user = os.environ.get("DB_USER")
     password = os.environ.get("DB_PASSWORD")
+    port = os.environ.get("DB_PORT", "5432")
 
     print("DB_HOST =", host)
 
     if not host:
-        raise Exception("DB_HOST 没有设置!Render环境变量没生效")
+        raise Exception("DB_HOST 没有设置!")
 
     return psycopg2.connect(
         host=host,
         database=db,
         user=user,
         password=password,
-        port="5432"
+        port=port
     )
 
 # ===============================
@@ -160,7 +161,14 @@ def delete_product(id):
         if os.path.exists(path):
             os.remove(path)
 
+    conn = get_conn()
+    cur = conn.cursor()
+
     cur.execute("DELETE FROM products WHERE id=%s",(id,))
+
+    conn.commit()
+    cur.close()
+    conn.close()
     cur = get_conn().cursor()
     cur.close()
 
