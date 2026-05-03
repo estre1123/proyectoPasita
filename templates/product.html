@@ -142,7 +142,7 @@ body{
 
 <script>
 const pathParts = window.location.pathname.split("/");
-const id = pathParts[pathParts.length - 1];
+const id = Number(pathParts[pathParts.length - 1]);
 
 let tipoActual = "";
 
@@ -188,7 +188,7 @@ data.forEach(p => {
 
         related.innerHTML += `
         <div class="related-card"
-             onclick="window.location.href = "/product/" + id'">
+            onclick="window.location.href='/product/${p.id}'">
 
             <img src="${p.image}">
             <h3>${p.name}</h3>
