@@ -141,7 +141,8 @@ body{
 <div id="related"></div>
 
 <script>
-const id = new URLSearchParams(window.location.search).get("id");
+const pathParts = window.location.pathname.split("/");
+const id = pathParts[pathParts.length - 1];
 
 let tipoActual = "";
 
@@ -187,7 +188,7 @@ data.forEach(p => {
 
         related.innerHTML += `
         <div class="related-card"
-             onclick="window.location.href='product.html?id=${p.id}'">
+             onclick="window.location.href='/product/${p.id}'">
 
             <img src="${p.image}">
             <h3>${p.name}</h3>
