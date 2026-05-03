@@ -146,7 +146,7 @@ const id = new URLSearchParams(window.location.search).get("id");
 let tipoActual = "";
 
 /* 当前商品 */
-fetch(`http://127.0.0.1:5000/products/${id}`)
+fetch(`/products/${id}`)
 .then(res => res.json())
 .then(p => {
 
@@ -174,7 +174,7 @@ cargarRelacionados();
 /* 同类型商品 */
 function cargarRelacionados(){
 
-fetch("http://127.0.0.1:5000/products")
+fetch("/products")
 .then(res => res.json())
 .then(data => {
 

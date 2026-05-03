@@ -384,7 +384,7 @@ function upload(){
     form.append("description", desc.value);
     form.append("image", file);
 
-    fetch("http://127.0.0.1:5000/add-product",{
+    fetch("/add-product",{
         method:"POST",
         body:form
     })
@@ -406,7 +406,7 @@ function upload(){
 /* 读取商品 */
 function load(filterTipo){
 
-    fetch("http://127.0.0.1:5000/products")
+    fetch("/products")
     .then(r=>r.json())
     .then(data=>{
 
@@ -450,7 +450,7 @@ function closeConfirm(){
 
 function confirmDelete(){
 
-    fetch("http://127.0.0.1:5000/delete-product/"+deleteId,{
+    fetch("/delete-product/"+deleteId,{
         method:"DELETE"
     })
     .then(r=>r.json())
@@ -466,7 +466,7 @@ function confirmDelete(){
 /* 打开编辑 */
 function openEdit(id){
 
-    fetch("http://127.0.0.1:5000/products/"+id)
+    fetch("/products/"+id)
     .then(r=>r.json())
     .then(p=>{
 
@@ -502,7 +502,7 @@ function saveEdit(){
         form.append("image", file);
     }
 
-    fetch("http://127.0.0.1:5000/edit-product/"+editId,{
+    fetch("/edit-product/"+editId,{
         method:"PUT",
         body:form
     })

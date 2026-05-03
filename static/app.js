@@ -10,7 +10,7 @@ window.onload = function () {
 /* 读取全部商品 */
 function loadProducts() {
 
-fetch("http://127.0.0.1:5000/products")
+fetch("/products")
 .then(function(res){
     return res.json();
 })
