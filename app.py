@@ -55,7 +55,7 @@ def admin():
 
 @app.route("/product/<int:id>")
 def product_page(id):
-    return render_template("product.html", product_id=id)
+    return render_template("product.html")
 # ===============================
 # 获取全部商品
 # ===============================
